@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Cross-session memory",
+    "description": "A sidebar page with weighted, compressed cross-session memory, digest controls and both compression thresholds.",
+    "detail": "./docs/detail.md"
+  }
+}

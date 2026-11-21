@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "跨会话记忆",
+    "description": "侧边栏整页：加权压缩后的跨会话记忆、归纳新回合、再压缩与上下文压缩阈值。",
+    "detail": "./docs/detail.zh.md"
+  }
+}

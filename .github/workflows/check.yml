@@ -1,0 +1,46 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  syntax:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check (host + client + libs)
+        shell: pwsh
+        run: |
+          $files = @('index.js', 'client.js') + (Get-ChildItem lib/*.js | ForEach-Object { $_.FullName })
+          foreach ($f in $files) {
+            Write-Host "node --check $f"
+            node --check $f
+            if ($LASTEXITCODE -ne 0) { exit 1 }
+          }
+
+      - name: Locale JSON parses
+        shell: pwsh
+        run: |
+          Get-ChildItem locale/*.json | ForEach-Object {
+            Write-Host "parse $($_.Name)"
+            Get-Content $_.FullName -Raw | ConvertFrom-Json | Out-Null
+          }
+
+      - name: Personal data must never be committed
+        shell: pwsh
+        run: |
+          if (Test-Path data) {
+            throw "data/ is present in the checkout - memory files must stay out of the repo"
+          }
+          $tracked = git ls-files
+          $bad = $tracked | Where-Object { $_ -like 'data/*' -or $_ -like '*.jsonl' -or $_ -like '*.log' }
+          if ($bad) {
+            Write-Host $bad
+            throw "personal data files are tracked"
+          }

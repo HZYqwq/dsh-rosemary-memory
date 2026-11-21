@@ -1,0 +1,4 @@
+# Memory data is personal: sessions, notes and snapshots never belong in git.
+data/
+*.log
+node_modules/

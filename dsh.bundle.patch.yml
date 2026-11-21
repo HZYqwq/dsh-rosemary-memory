@@ -1,0 +1,11 @@
+# dsh-memory bundle layer.
+# Mounted when the profile lists dsh-memory in dsh.profile.bundles.
+# One always-on entry: it carries the host tools (memory_digest / memory_recall /
+# memory_remember / memory_brief), the /dsh-memory/* web routes and the client
+# bundle (composer dock button).
+# storeDir keeps the memory off the C: profile; it defaults to <plugin>/data.
+- insert:
+    - id: dsh-memory
+      name: dsh-memory
+      config:
+        storeDir: D:/deepseek/dsh-memory/data

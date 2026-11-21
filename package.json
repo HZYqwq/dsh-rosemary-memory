@@ -1,0 +1,49 @@
+{
+  "name": "dsh-memory",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Manual, deterministic cross-session memory for DeepSeek Harness: press a button to digest finished turns into runs/notes, then recall them in any session. No server, no vectors in v1.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./public/*": "./public/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib",
+    "locale",
+    "docs",
+    "scripts/smoke.mjs",
+    "README.md",
+    "dsh.bundle.patch.yml",
+    "icon.svg",
+    "package.json"
+  ],
+  "icon": "./icon.svg",
+  "dsh": {
+    "bundle": {
+      "patch": "./dsh.bundle.patch.yml"
+    },
+    "client": {
+      "platform": "web"
+    }
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "memory",
+    "rag",
+    "context"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.15.0"
+  }
+}
