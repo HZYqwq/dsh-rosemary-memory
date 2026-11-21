@@ -342,6 +342,11 @@ function readBody(req) {
   });
 }
 
+// A second digest while one is still running would read and rewrite the same
+// JSONL files concurrently. The panel disables the button while it waits, but a
+// second window (or a remote client) could still fire one.
+let digestInFlight = false;
+
 function makeRouteHandler() {
   return async (req, res) => {
     const url = new URL(req.url || '/', 'http://127.0.0.1');
@@ -373,8 +378,16 @@ function makeRouteHandler() {
           const newest = listSessions({ home: homeDir(), all: true, limit: 1 })[0];
           if (newest) request.sessionId = newest.id;
         }
-        const payload = dryRun ? previewDigest(request) : applyDigest(request);
-        return jsonResponse(res, 200, { ok: true, ...payload });
+        if (digestInFlight) {
+          return jsonResponse(res, 409, { ok: false, error: 'a digest is already running; wait for it to finish' });
+        }
+        digestInFlight = true;
+        try {
+          const payload = dryRun ? previewDigest(request) : applyDigest(request);
+          return jsonResponse(res, 200, { ok: true, ...payload });
+        } finally {
+          digestInFlight = false;
+        }
       }
       if (route === '/remember' && req.method === 'POST') {
         const body = await readBody(req);

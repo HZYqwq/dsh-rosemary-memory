@@ -9,7 +9,12 @@
 //
 // Everything is a same-origin fetch to /dsh-rosemary-memory/*, so it keeps working when
 // the UI is opened from a phone through the remote tunnel.
-window.__ModuleLoader__.load({
+// A stale module graph can make the shell execute this same bundle URL twice
+// (it logs "duplicate factory registration" and keeps the first module). The
+// guard makes a second execution a no-op instead of a console error.
+if (window.__dshRosemaryMemoryLoaded !== true) {
+  window.__dshRosemaryMemoryLoaded = true;
+  window.__ModuleLoader__.load({
   id: 'dsh-rosemary-memory',
   factory: (require) => {
     const React = require('react');
@@ -394,4 +399,5 @@ window.__ModuleLoader__.load({
       },
     };
   },
-});
+  });
+}
