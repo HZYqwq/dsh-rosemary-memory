@@ -81,10 +81,14 @@ function digestSessions({ sessionId, project, all, limit }) {
   return { home, sessions: listSessions(scope) };
 }
 
-export function planDigest({ sessionId, project, all, limit } = {}) {
+export async function planDigest({ sessionId, project, all, limit } = {}) {
   const { home, sessions } = digestSessions({ sessionId, project, all, limit });
   const plans = [];
   for (const session of sessions) {
+    // A digest of every session is a few seconds of transcript decoding. Yield
+    // between sessions so the host keeps answering IPC while it runs: desktop
+    // hosts are supervised, and a multi-second block looks like a hang.
+    await new Promise((resolve) => setImmediate(resolve));
     let records;
     try {
       records = readRecords(session.file);
@@ -104,8 +108,8 @@ export function planDigest({ sessionId, project, all, limit } = {}) {
   return { home, plans };
 }
 
-export function applyDigest({ sessionId, project, all, limit } = {}) {
-  const { plans } = planDigest({ sessionId, project, all, limit });
+export async function applyDigest({ sessionId, project, all, limit } = {}) {
+  const { plans } = await planDigest({ sessionId, project, all, limit });
   const root = storeRoot();
   const summary = { sessions: 0, runsAdded: 0, notesAdded: 0, skippedSessions: [] };
   for (const plan of plans) {
@@ -126,8 +130,8 @@ export function applyDigest({ sessionId, project, all, limit } = {}) {
   return { ...summary, storeDir: root, lastDigestAt: state.lastDigestAt };
 }
 
-function previewDigest({ sessionId, project, all, limit } = {}) {
-  const { plans } = planDigest({ sessionId, project, all, limit });
+async function previewDigest({ sessionId, project, all, limit } = {}) {
+  const { plans } = await planDigest({ sessionId, project, all, limit });
   const root = storeRoot();
   const existingRuns = new Set(readAll(root, 'runs').map((record) => record.id));
   const existingNotes = new Set(readAll(root, 'notes').map((record) => record.id));
@@ -383,7 +387,7 @@ function makeRouteHandler() {
         }
         digestInFlight = true;
         try {
-          const payload = dryRun ? previewDigest(request) : applyDigest(request);
+          const payload = dryRun ? await previewDigest(request) : await applyDigest(request);
           return jsonResponse(res, 200, { ok: true, ...payload });
         } finally {
           digestInFlight = false;
@@ -457,7 +461,7 @@ export function apply(ctx, config = {}) {
         // scope to every session under a big project would be a surprise. Explicit
         // sessionId/project/all win; otherwise the newest session is previewed.
         const request = { ...args, project: args.project || '' };
-        return args.dryRun === false ? applyDigest(request) : previewDigest(request);
+        return args.dryRun === false ? await applyDigest(request) : await previewDigest(request);
       },
       output: textOutput(),
     },
