@@ -91,6 +91,8 @@ npm install dsh-rosemary-memory      # 或 pnpm add dsh-rosemary-memory
 
 重载 DSH（或 `plugin_manager set_bundle enabled=false` → `true`）后，左侧栏出现「🧠 记忆」。
 
+> ⚠️ 从 npm 安装时，默认数据目录落在 `node_modules/dsh-rosemary-memory/data`，重装或升级依赖会把它连同记忆一起换掉。想长期保留，请用 `DSH_ROSEMARY_MEMORY_DIR` 或 bundle config 的 `storeDir` 指到 profile 之外（见「数据」）。
+
 ### 本地目录（改代码时用这个）
 
 ```
