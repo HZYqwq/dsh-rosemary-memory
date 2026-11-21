@@ -1,5 +1,9 @@
 # dsh-rosemary-memory
 
+[![npm version](https://img.shields.io/npm/v/dsh-rosemary-memory.svg)](https://www.npmjs.com/package/dsh-rosemary-memory)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D22.15-brightgreen.svg)](package.json)
+
 **可审计的跨会话记忆** —— DeepSeek Harness（DSH）插件。
 
 > 名字里的 rosemary 是「迷迭香」：记忆的香料。记住该记的，也敢忘记该忘的。
