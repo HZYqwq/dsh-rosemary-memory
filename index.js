@@ -1,8 +1,9 @@
-// dsh-memory — manual, deterministic cross-session memory for DeepSeek Harness.
+// dsh-rosemary-memory — manual, deterministic cross-session memory for DeepSeek Harness.
 //
 // Host side:
 //   tools   memory_digest / memory_recall / memory_remember / memory_brief
-//   routes  /dsh-memory/{status,digest,notes,remember,recall,brief,units,compress,settings}
+//   routes  /dsh-rosemary-memory/{status,digest,notes,remember,recall,brief,units,compress,settings}
+//           (/dsh-memory/* stays as a legacy alias)
 //
 // The digest runs only when someone asks (the composer-dock button, a tool call
 // or the CLI). It reads finished turns from the session transcripts on disk and
@@ -18,7 +19,7 @@ import { readAll, mergeRuns, mergeNotes, loadState, saveState } from './lib/stor
 import { recall, brief } from './lib/recall.js';
 import { buildUnits, normalizeConfig, DEFAULT_CONFIG } from './lib/units.js';
 
-export const name = 'dsh-memory';
+export const name = 'dsh-rosemary-memory';
 export const inject = ['tools'];
 
 const PLUGIN_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -38,11 +39,17 @@ function homeDir() {
 
 // Where runs/notes/state live. Defaults to `<plugin>/data`, which keeps the
 // memory on the same drive as the checkout instead of growing the user profile
-// on C:. Overridable by DSH_MEMORY_DIR (env) or `storeDir` in the bundle config.
+// on C:. Overridable by DSH_ROSEMARY_MEMORY_DIR (env), the legacy DSH_MEMORY_DIR,
+// or `storeDir` in the bundle config.
 let configuredStoreDir = '';
 
 function storeRoot() {
-  return process.env.DSH_MEMORY_DIR || configuredStoreDir || path.join(PLUGIN_DIR, 'data');
+  return (
+    process.env.DSH_ROSEMARY_MEMORY_DIR ||
+    process.env.DSH_MEMORY_DIR ||
+    configuredStoreDir ||
+    path.join(PLUGIN_DIR, 'data')
+  );
 }
 
 function normalizePath(value) {
@@ -338,7 +345,9 @@ function readBody(req) {
 function makeRouteHandler() {
   return async (req, res) => {
     const url = new URL(req.url || '/', 'http://127.0.0.1');
-    const route = url.pathname.replace(/^\/dsh-memory/, '') || '/';
+    // Both prefixes land here: /dsh-rosemary-memory is canonical, /dsh-memory is
+    // kept so old bookmarks and a stale client bundle keep working.
+    const route = url.pathname.replace(/^\/dsh-(?:rosemary-)?memory/, '') || '/';
     const query = Object.fromEntries(url.searchParams.entries());
     try {
       if (route === '/' || route === '/status') {
@@ -401,7 +410,7 @@ function makeRouteHandler() {
         const context = body.context ? saveContextSettings(body.context) : contextSettings();
         return jsonResponse(res, 200, { ok: true, memory, context });
       }
-      return jsonResponse(res, 404, { ok: false, error: `unknown dsh-memory route: ${route}` });
+      return jsonResponse(res, 404, { ok: false, error: `unknown route: ${route}` });
     } catch (error) {
       return jsonResponse(res, 500, { ok: false, error: String(error?.message || error) });
     }
@@ -515,18 +524,22 @@ export function apply(ctx, config = {}) {
   }
 
   const handler = makeRouteHandler();
-  const route = { kind: 'prefix', path: '/dsh-memory', handler };
+  const routes = [
+    { kind: 'prefix', path: '/dsh-rosemary-memory', handler },
+    { kind: 'prefix', path: '/dsh-memory', handler },
+  ];
 
   const mountRoute = (sub) => {
     const server = sub?.webServer ?? sub;
     if (!server || typeof server.register !== 'function') return;
     const effect = typeof sub?.effect === 'function' ? sub.effect.bind(sub) : null;
-    const off = effect
-      ? effect(() => {
-          const dispose = server.register(route);
-          return () => dispose?.();
-        }, 'dsh-memory routes')
-      : server.register(route);
+    const registerAll = () => {
+      const disposersForRoutes = routes.map((route) => server.register(route));
+      return () => {
+        for (const dispose of disposersForRoutes) dispose?.();
+      };
+    };
+    const off = effect ? effect(registerAll, 'dsh-rosemary-memory routes') : registerAll();
     if (!effect) disposers.push(() => off?.());
   };
 

@@ -1,4 +1,4 @@
-# 跨会话记忆（dsh-memory）
+# 跨会话记忆（dsh-rosemary-memory）
 
 ## 一句话
 
@@ -6,14 +6,14 @@
 
 ## 为什么需要它
 
-bili（billion-context）在**会话内部**压缩上下文：折叠出来的摘要随会话走，会话删了摘要也没了。dsh-memory 在会话**之外**再存一层可检索记忆，让上一个会话踩过的坑能被下一个会话查到。
+bili（billion-context）在**会话内部**压缩上下文：折叠出来的摘要随会话走，会话删了摘要也没了。dsh-rosemary-memory 在会话**之外**再存一层可检索记忆，让上一个会话踩过的坑能被下一个会话查到。
 
 ## 怎么用
 
 1. **侧边栏页面**：左侧栏点「🧠 记忆」→ 「记忆」页列出加权压缩后的单元（playbook 排前，展开看被压缩掉的原文）；「阈值」页调再压缩阈值与 bili 压缩阈值。
 2. **页头两个按钮**：「归纳新回合」扫描本项目已完成回合（默认最新会话，`all:true` 才全量，确定性、不跑模型）；「重新压缩」重新聚合 units 并写一份 `data/units.json` 快照。
 3. **工具**：`memory_digest`（默认 dry-run）、`memory_recall`、`memory_remember`、`memory_brief`。
-4. **HTTP**：`GET /dsh-memory/status`、`POST /dsh-memory/digest`、`GET /dsh-memory/recall?q=`、`GET /dsh-memory/brief`、`GET /dsh-memory/notes`、`POST /dsh-memory/remember`、`GET /dsh-memory/units?q=`、`POST /dsh-memory/compress`、`GET|POST /dsh-memory/settings`。
+4. **HTTP**：`GET /dsh-rosemary-memory/status`、`POST /dsh-rosemary-memory/digest`、`GET /dsh-rosemary-memory/recall?q=`、`GET /dsh-rosemary-memory/brief`、`GET /dsh-memory/notes`、`POST /dsh-memory/remember`、`GET /dsh-memory/units?q=`、`POST /dsh-memory/compress`、`GET|POST /dsh-memory/settings`。
 
 归纳在没有会话 id 时默认只处理**最近写入的那个会话**，不会一次扫全机器。
 

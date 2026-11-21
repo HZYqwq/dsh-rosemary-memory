@@ -1,4 +1,4 @@
-# Cross-session memory (dsh-memory)
+# Cross-session memory (dsh-rosemary-memory)
 
 ## What it is
 
@@ -6,14 +6,14 @@ Click 🧠 Memory in the left sidebar for a full page: the top half is **weighte
 
 ## Why
 
-bili (billion-context) compresses context *inside* a session: its folded summaries die with the session. dsh-memory keeps a searchable layer *outside* the session, so a trap hit in one session is findable from the next.
+bili (billion-context) compresses context *inside* a session: its folded summaries die with the session. dsh-rosemary-memory keeps a searchable layer *outside* the session, so a trap hit in one session is findable from the next.
 
 ## How to use it
 
 1. **Sidebar page**: 🧠 Memory in the left sidebar opens the weighted memory list (playbooks first, expandable to the notes they folded). The 阈值 tab edits both threshold groups.
 2. **Two header buttons**: 归纳新回合 digests finished turns (newest session by default; `all:true` sweeps everything — deterministic, no model call); 重新压缩 re-clusters notes and writes a `data/units.json` snapshot.
 3. **Tools**: `memory_digest` (dry-run by default), `memory_recall`, `memory_remember`, `memory_brief`.
-4. **HTTP**: `GET /dsh-memory/status`, `POST /dsh-memory/digest`, `GET /dsh-memory/recall?q=`, `GET /dsh-memory/brief`, `GET /dsh-memory/notes`, `POST /dsh-memory/remember`, `GET /dsh-memory/units?q=`, `POST /dsh-memory/compress`, `GET|POST /dsh-memory/settings`.
+4. **HTTP**: `GET /dsh-rosemary-memory/status`, `POST /dsh-rosemary-memory/digest`, `GET /dsh-rosemary-memory/recall?q=`, `GET /dsh-rosemary-memory/brief`, `GET /dsh-memory/notes`, `POST /dsh-memory/remember`, `GET /dsh-memory/units?q=`, `POST /dsh-memory/compress`, `GET|POST /dsh-memory/settings`.
 
 Without a session id the button digests only the most recently written session, never the whole machine.
 

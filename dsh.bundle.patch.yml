@@ -1,11 +1,15 @@
-# dsh-memory bundle layer.
-# Mounted when the profile lists dsh-memory in dsh.profile.bundles.
+# dsh-rosemary-memory bundle layer.
+# Mounted when the profile lists dsh-rosemary-memory in dsh.profile.bundles.
 # One always-on entry: it carries the host tools (memory_digest / memory_recall /
-# memory_remember / memory_brief), the /dsh-memory/* web routes and the client
-# bundle (composer dock button).
-# storeDir keeps the memory off the C: profile; it defaults to <plugin>/data.
+# memory_remember / memory_brief), the /dsh-rosemary-memory/* web routes (the old
+# /dsh-memory/* prefix stays as an alias) and the client bundle (sidebar page).
+#
+# storeDir is optional. It defaults to <plugin>/data, i.e. the memory lives next to
+# the checkout instead of growing the user profile. Override it here or with the
+# DSH_ROSEMARY_MEMORY_DIR environment variable:
+#
+#   config:
+#     storeDir: D:/somewhere/rosemary-data
 - insert:
-    - id: dsh-memory
-      name: dsh-memory
-      config:
-        storeDir: D:/deepseek/dsh-memory/data
+    - id: dsh-rosemary-memory
+      name: dsh-rosemary-memory

@@ -1,4 +1,4 @@
-// dsh-memory — browser entry.
+// dsh-rosemary-memory — browser entry.
 //
 // One page, reachable from the left sidebar, in two halves:
 //
@@ -7,22 +7,22 @@
 //   * 阈值 — the two thresholds that decide when this page grows a new playbook
 //     (memory) and when billion-context starts folding the conversation.
 //
-// Everything is a same-origin fetch to /dsh-memory/*, so it keeps working when
+// Everything is a same-origin fetch to /dsh-rosemary-memory/*, so it keeps working when
 // the UI is opened from a phone through the remote tunnel.
 window.__ModuleLoader__.load({
-  id: 'dsh-memory',
+  id: 'dsh-rosemary-memory',
   factory: (require) => {
     const React = require('react');
     const h = React.createElement;
 
-    const ROUTE = '/dsh-memory';
+    const ROUTE = '/dsh-rosemary-memory';
     const C = {
       text: 'var(--dsw-alias-label-primary, #18202c)',
       muted: 'var(--dsw-alias-label-secondary, #667085)',
       line: 'var(--dsw-alias-border-l2, #e7e9ef)',
       soft: 'var(--dsw-alias-bg-layer-2, #f7f8fa)',
       bg: 'var(--dsw-alias-bg-layer-1, #fff)',
-      accent: 'var(--dsh-memory-accent, #4f6bdb)',
+      accent: 'var(--dsh-rosemary-memory-accent, #4f6bdb)',
     };
 
     async function api(pathname, init) {
@@ -388,9 +388,9 @@ window.__ModuleLoader__.load({
         // The page itself: `main` + a `sidebar.panellist` entry keyed by the same
         // id is how a plugin owns a full screen instead of a decoration slot.
         ctx.slots.inject('main', () =>
-          ctx.slots.register({ name: 'main', key: 'dsh-memory', inject: () => ({}) }, MemoryPage));
+          ctx.slots.register({ name: 'main', key: 'dsh-rosemary-memory', inject: () => ({}) }, MemoryPage));
         ctx.slots.inject('sidebar.panellist', () =>
-          ctx.slots.register({ name: 'sidebar.panellist', id: 'dsh-memory', order: 40, label: '记忆' }, MemoryIcon));
+          ctx.slots.register({ name: 'sidebar.panellist', id: 'dsh-rosemary-memory', order: 40, label: '记忆' }, MemoryIcon));
       },
     };
   },

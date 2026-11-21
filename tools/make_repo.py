@@ -1,4 +1,4 @@
-"""把 dsh-memory 整理成可以推到 GitHub 的仓库。
+"""把 dsh-rosemary-memory 整理成可以推到 GitHub 的仓库。
 
 做的事，按顺序：
 
@@ -197,7 +197,7 @@ def git_init_and_commit():
         failures.append('没有文件被暂存，检查 .gitignore')
         return
 
-    commit = run(['git', 'commit', '-m', 'dsh-memory 0.2.0: 可审计的跨会话记忆'])
+    commit = run(['git', 'commit', '-m', 'dsh-rosemary-memory 0.3.0: 可审计的跨会话记忆'])
     if commit.returncode != 0:
         failures.append(f'git commit 失败：{(commit.stderr or commit.stdout).strip()[:300]}')
         return
@@ -215,11 +215,11 @@ def next_steps():
         print(f'\n    推送： git push -u origin {BRANCH}')
         return
     print('    1) 打开 https://github.com/new')
-    print('    2) 仓库名 dsh-memory，描述 "Auditable cross-session memory for DeepSeek Harness"')
+    print('    2) 仓库名 dsh-rosemary-memory，描述 "Auditable cross-session memory for DeepSeek Harness"')
     print('    3) 选 Public')
     print('    4) 不要勾 Add a README / Add .gitignore / Choose a license（本地都有，勾了会冲突）')
     print('    5) 创建后执行：')
-    print('         git remote add origin https://github.com/HZYqwq/dsh-memory.git')
+    print('         git remote add origin https://github.com/HZYqwq/dsh-rosemary-memory.git')
     print(f'         git push -u origin {BRANCH}')
     print('\n    注：本机 git 配了全局代理 http.proxy=127.0.0.1:10909，代理没开时会连不上。')
     print('        代理没开就直接绕过：')

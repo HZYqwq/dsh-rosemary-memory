@@ -1,8 +1,7 @@
 {
-  "name": "dsh-memory",
-  "version": "0.2.0",
-  "private": true,
-  "description": "Manual, deterministic cross-session memory for DeepSeek Harness: press a button to digest finished turns into runs/notes, then recall them in any session. No server, no vectors in v1.",
+  "name": "dsh-rosemary-memory",
+  "version": "0.3.0",
+  "description": "Auditable cross-session memory for DeepSeek Harness: digest finished turns into runs and notes deterministically, compress them by explainable weights, recall them by exact match in any session. No server, no model calls, no vectors.",
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -21,6 +20,8 @@
     "docs",
     "scripts/smoke.mjs",
     "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
     "dsh.bundle.patch.yml",
     "icon.svg",
     "package.json"
@@ -39,10 +40,24 @@
     "deepseek-harness",
     "dsh-plugin",
     "memory",
+    "cross-session-memory",
     "rag",
-    "context"
+    "context",
+    "rosemary"
   ],
+  "author": "HZY",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HZYqwq/dsh-rosemary-memory.git"
+  },
+  "homepage": "https://github.com/HZYqwq/dsh-rosemary-memory#readme",
+  "bugs": {
+    "url": "https://github.com/HZYqwq/dsh-rosemary-memory/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=22.15.0"
   }

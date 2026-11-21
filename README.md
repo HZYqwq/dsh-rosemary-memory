@@ -1,6 +1,8 @@
-# dsh-memory
+# dsh-rosemary-memory
 
 **可审计的跨会话记忆** —— DeepSeek Harness（DSH）插件。
+
+> 名字里的 rosemary 是「迷迭香」：记忆的香料。记住该记的，也敢忘记该忘的。
 
 过去的会话被归纳成一条条 run / note，再按权重压成可展开的记忆单元；下个会话开头把它注入，或者随时按报错串、命令、文件名召回。**不跑模型、不上服务器、不改写原始会话记录**——同一份输入永远给出同一份结果，每一步打分都能解释。
 
@@ -12,7 +14,7 @@
 
 DSH 的上下文插件（如 [billion-context](https://github.com/ranxianglei/billion-context)）在**会话内部**压缩：折叠出的摘要省下了 token，但会话一关，摘要也跟着消失。三个月前那次部署踩的坑，今天的会话完全不知道。
 
-dsh-memory 在会话之外再存一层记忆：
+dsh-rosemary-memory 在会话之外再存一层记忆：
 
 ```
 L0 原始消息 ──► L1 会话内折叠摘要（bili 的活）
@@ -53,7 +55,7 @@ L0 原始消息 ──► L1 会话内折叠摘要（bili 的活）
 
 ## 和已有项目的关系
 
-| | dsh-memory | [claude-mem](https://github.com/thedotmack/claude-mem) | [Basic Memory](https://basicmemory.com) |
+| | dsh-rosemary-memory | [claude-mem](https://github.com/thedotmack/claude-mem) | [Basic Memory](https://basicmemory.com) |
 | --- | --- | --- | --- |
 | 采集 | 解析会话原档，**零模型调用** | hooks + SDK 生成语义摘要 | 模型通过 MCP 工具写 Markdown |
 | 压缩 | 相似度聚类 + 可解释权重 + 阈值可调 | 摘要 | 人工/模型整理 |
@@ -65,22 +67,50 @@ L0 原始消息 ──► L1 会话内折叠摘要（bili 的活）
 
 ## 安装
 
-DSH 里的一条命令（路径换成你自己的包目录）：
+### npm（推荐）
+
+DSH 用 pnpm 管 profile，所以在这台机器上装插件 = 在自己的 profile 目录里加一个依赖。直接指向 npm 上的包：
 
 ```
-plugin_manager install_bundle  target: "D:/path/to/dsh-memory"
+cd ~/.dsh/profiles/<profile>
+npm install dsh-rosemary-memory      # 或 pnpm add dsh-rosemary-memory
 ```
 
-或者手工挂进 profile（`~/.dsh/profiles/<profile>/package.json`）：
+然后在同一个 `package.json` 里把包名登记进 bundles 列表：
 
 ```jsonc
 {
-  "dependencies": { "dsh-memory": "link:D:/path/to/dsh-memory" },
-  "dsh": { "profile": { "bundles": ["...", "dsh-memory"] } }
+  "dependencies": { "dsh-rosemary-memory": "^0.3.0" },
+  "dsh": { "profile": { "bundles": ["...", "dsh-rosemary-memory"] } }
 }
 ```
 
-装完重载插件（`set_bundle enabled=false` → `true`）或重启 DSH。左侧栏会出现「🧠 记忆」。
+重载 DSH（或 `plugin_manager set_bundle enabled=false` → `true`）后，左侧栏出现「🧠 记忆」。
+
+### 本地目录（改代码时用这个）
+
+```
+plugin_manager install_bundle  target: "D:/path/to/dsh-rosemary-memory"
+```
+
+或者手工 link 进 profile：
+
+```jsonc
+{
+  "dependencies": { "dsh-rosemary-memory": "link:D:/path/to/dsh-rosemary-memory" },
+  "dsh": { "profile": { "bundles": ["...", "dsh-rosemary-memory"] } }
+}
+```
+
+### 从源码装
+
+```powershell
+git clone https://github.com/HZYqwq/dsh-rosemary-memory
+cd dsh-rosemary-memory
+python -X utf8 tools/make_repo.py --check   # 只检查，不动 git
+```
+
+包本身零依赖、无构建步骤，`node --check` 通过就能跑。
 
 ## 用法
 
@@ -98,11 +128,13 @@ plugin_manager install_bundle  target: "D:/path/to/dsh-memory"
 **HTTP**（同源，手机端也能用）：
 
 ```
-GET  /dsh-memory/status          GET  /dsh-memory/brief?budget=1200
-GET  /dsh-memory/recall?q=       GET  /dsh-memory/notes?limit=50
-POST /dsh-memory/digest          POST /dsh-memory/remember
-GET  /dsh-memory/units?q=        POST /dsh-memory/compress
-GET|POST /dsh-memory/settings
+GET  /dsh-rosemary-memory/status          GET  /dsh-rosemary-memory/brief?budget=1200
+GET  /dsh-rosemary-memory/recall?q=       GET  /dsh-rosemary-memory/notes?limit=50
+POST /dsh-rosemary-memory/digest          POST /dsh-rosemary-memory/remember
+GET  /dsh-rosemary-memory/units?q=        POST /dsh-rosemary-memory/compress
+GET|POST /dsh-rosemary-memory/settings
+
+旧的 `/dsh-memory/*` 前缀继续可用（别名）。
 ```
 
 默认作用域是故意收窄的：`digest` 什么都不给时只归纳**最新会话**（按钮点一下不会扫全机器）；`recall` 不给 project 时搜**全部项目**；`brief` 优先当前目录，没有则回退全库。
@@ -129,7 +161,7 @@ GET|POST /dsh-memory/settings
   state.json   归纳时间、阈值
 ```
 
-全部 append-only、可 grep、可手改。位置可用 `DSH_MEMORY_DIR` 或 config `storeDir` 覆盖。
+全部 append-only、可 grep、可手改。位置可用 `DSH_ROSEMARY_MEMORY_DIR`（或旧名 `DSH_MEMORY_DIR`）、或 config `storeDir` 覆盖。
 
 **数据永远不会进仓库**：`.gitignore` 已经排除 `data/`，CI 也会在检测到 `data/` 被提交时直接失败。
 
